@@ -1,15 +1,4 @@
-import pyglet
-from pyglet.window import key
+from ursina.main import Ursina
+from ursina.prefabs.first_person_controller import FirstPersonController
 
-window = pyglet.window.Window()
-keys = key.KeyStateHandler()
-
-
-@window.event
-def on_key_press(keys, modifiers):
-    # Check if the spacebar is currently pressed:
-    print(key.symbol_string(keys))
-    # window.push_handlers(keys)
-
-
-pyglet.app.run()
+app = Ursina()

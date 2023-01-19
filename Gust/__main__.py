@@ -3,6 +3,7 @@ from ursina import *
 app = Ursina()
 window.title = "Gust"
 
+
 def update():
     pass
 
@@ -16,7 +17,7 @@ if __name__ == "__main__":
     ground = Entity(
         model="cube",
         origin_y=0.5,
-        scale=(2, 2, 1),
+        scale=(2, 2),
         collider="box",
         # red color
         color=color.rgb(255, 0, 0),

@@ -6,7 +6,9 @@ from ursina import Entity
 from ursina import color
 from ursina import held_keys
 from ursina import application
+from ursina import Vec2
 from ursina.main import time
+from player import player_controller
 
 
 app = Ursina()
@@ -27,28 +29,28 @@ pause_handler = Entity(
 )  # used to receive input despite game being paused as 'pause_handler' ignores pauses
 
 
+# def update():
+#     ground.y += 1 * time.dt
+
+
 def update():
-    ground.rotation_x += 20 * time.dt
-    ground.rotation_y += 200 * time.dt
-    ground.rotation_z += 200 * time.dt
+    pass
 
 
 if __name__ == "__main__":
     camera.orthographic = True
-    camera.fov = 10
+    camera.fov = 20
 
     EditorCamera()
 
     ground = Entity(
         model="cube",
-        origin_y=0.5,
-        scale=(2, 2),
+        scale=(40, 2),
         collider="box",
-        # red color
         color=color.rgb(255, 0, 0),
-        position=(0, 0, 0),
-        texture="white_cube",
-        y=1,
+        position=Vec2(0, -camera.fov / 2),  # bottom of screen
     )
+
+    player = player_controller()
 
     app.run()

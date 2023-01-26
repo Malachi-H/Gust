@@ -1,6 +1,5 @@
 from ursina import window
 from ursina import Ursina
-from ursina import camera
 from ursina import EditorCamera
 from ursina import Entity
 from ursina import color
@@ -9,6 +8,8 @@ from ursina import application
 from ursina import Vec2
 from ursina.main import time
 from player import player_controller
+from level import camera
+from level import ground
 
 
 app = Ursina()
@@ -39,18 +40,11 @@ def update():
 
 if __name__ == "__main__":
     camera.orthographic = True
-    camera.fov = 20
-
+    print(camera.fov)
     EditorCamera()
 
-    ground = Entity(
-        model="cube",
-        scale=(40, 2),
-        collider="box",
-        color=color.rgb(255, 0, 0),
-        position=Vec2(0, -camera.fov / 2),  # bottom of screen
-    )
-
-    player = player_controller()
+    # player = player_controller()
+    level = ground
+    print(camera.fov)
 
     app.run()

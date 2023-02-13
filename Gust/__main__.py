@@ -14,22 +14,20 @@ class Game:
 
 pygame.init()
 Window = Window()
-Window.display_screen
+Window.screen
 clock = pygame.time.Clock()
 game = Game()
-player = Player(Window.display_screen)
+player = Player(Window.screen)
 
 active = True
 while active:
-    # pump=False augment is broken so event.get() can only be used once per frame with the lines result passed to other files
+    # pump = False augment is broken so event.get() can only be used once per frame with the lines result passed to other files
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.QUIT:
             active = False
-        elif event.type == pygame.VIDEORESIZE:
-            Window.constrain_aspect_ratio_and_min_size()
 
-    Window.display_screen.fill("white")
+    Window.screen.fill("white")
     player.update(events)
     pygame.display.update()
     clock.tick(60)

@@ -36,7 +36,7 @@ class Player:
                     self.intended_direction = Direction.RIGHT
                 elif event.key == pygame.K_RIGHT:
                     self.intended_direction = Direction.LEFT
-            
+
         key = pygame.key.get_pressed()
         if key == pygame.K_LEFT:
             self.intended_direction = key

@@ -27,7 +27,7 @@ while active:
         if event.type == pygame.QUIT:
             active = False
 
-    Window.screen.fill("white")
+    Window.update()
     player.update(events)
     pygame.display.update()
     clock.tick(60)

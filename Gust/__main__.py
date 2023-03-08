@@ -17,7 +17,6 @@ Window = Window()
 Window.screen
 clock = pygame.time.Clock()
 game = Game()
-player = Player(Window.screen)
 
 active = True
 while active:
@@ -27,7 +26,6 @@ while active:
         if event.type == pygame.QUIT:
             active = False
 
-    Window.update()
-    player.update(events)
+    Window.update(events)
     pygame.display.update()
     clock.tick(60)

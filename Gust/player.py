@@ -1,6 +1,5 @@
 from enum import Enum, auto
 import pygame
-import window
 from pygame.surface import Surface
 from pygame.event import Event
 from typing import List
@@ -12,7 +11,7 @@ class Direction(Enum):
     STATIONARY = auto()
 
 
-class Player:
+class Player(pygame.sprite.Sprite):
     def __init__(self, surface: Surface) -> None:
         self.image = pygame.Surface((10, 20))
         self.image.fill("orange")

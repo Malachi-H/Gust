@@ -4,7 +4,6 @@ from pygame.surface import Surface
 from pygame.event import Event
 from typing import List
 from pygame.sprite import Sprite
-from pygame.sprite import GroupSingle
 
 
 class Direction(Enum):
@@ -20,14 +19,14 @@ class Player(Sprite):
         self.image = pygame.Surface((10, 20))
         self.image.fill("orange")
         self.display_surface = surface
-        self.position = pygame.Vector2()
-        self.position.x = self.display_surface.get_rect().centerx
-        self.position.y = self.display_surface.get_rect().height * 0.9
+        self.rect = self.image.get_rect()
+        self.rect.x = self.display_surface.get_rect().centerx
+        self.rect.y = int(self.display_surface.get_rect().height * 0.75)
         self.velocity = pygame.Vector2(0, 0)
         self.intended_direction = Direction.STATIONARY
 
     def draw(self) -> None:
-        self.display_surface.blit(self.image, self.position)
+        self.display_surface.blit(self.image, self.rect)
 
     def get_input(self, events: List[Event]) -> None:
         for event in events:
@@ -51,12 +50,10 @@ class Player(Sprite):
             self.velocity.x += 1
 
     def update_position(self) -> None:
-        self.position += self.velocity
+        self.rect.x += int(self.velocity.x)
+        self.rect.y += int(self.velocity.y)
         # damping / friction
         self.velocity *= 0.95
-
-    def check_collision(self, Obstacles: GroupSingle) -> None:
-        pass
 
     def update(self, events: List[Event]) -> None:
         self.get_input(events)

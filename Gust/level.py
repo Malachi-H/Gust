@@ -13,9 +13,12 @@ from typing import Literal, List
 
 @dataclass
 class ScrollingValues:
-    acceleration: float = 0
+    acceleration_gravity = -0.1
+    acceleration_up = 1
+    acceleration_down = -1
+    current_acceleration: float = 0
     velocity: float = 0
-    scrolling_damping: float = 0.95
+    damping: float = 0.05
 
     def multiply_attribute(self, attribute_name: str, value: float) -> None:
         attribute = getattr(self, attribute_name)
@@ -69,10 +72,16 @@ class Level:
 
         # Scrolling
         self.cloud_scrolling = ScrollingValues()
-        self.cloud_scrolling.multiply_attribute("acceleration", 2)
+        self.cloud_scrolling.multiply_attribute("acceleration_up", 2)
+        self.cloud_scrolling.multiply_attribute("acceleration_down", 2)
+        self.cloud_scrolling.multiply_attribute("acceleration_gravity", 2)
+        # self.cloud_scrolling.multiply_attribute("damping", 2)
 
         self.wind_scrolling = ScrollingValues()
-        self.wind_scrolling.multiply_attribute("acceleration", 2)
+        self.wind_scrolling.multiply_attribute("acceleration_up", 2)
+        self.wind_scrolling.multiply_attribute("acceleration_down", 2)
+        self.wind_scrolling.multiply_attribute("acceleration_gravity", 2)
+        # self.wind_scrolling.multiply_attribute("damping", 2)
 
         self.background_scrolling = ScrollingValues()
 
@@ -82,13 +91,23 @@ class Level:
         layer_rect: pygame.Rect,
         layer_image: Surface,
     ) -> None:
-        # scrolling
-        if pygame.key.get_pressed()[pygame.K_UP]:
-            layer_scrolling.acceleration = 1
-        if pygame.key.get_pressed()[pygame.K_DOWN]:
-            layer_scrolling.acceleration = -1
+        layer_scrolling.current_acceleration = 0
+        # apply gravity
+        layer_scrolling.current_acceleration += layer_scrolling.acceleration_gravity
 
-        layer_scrolling.velocity += layer_scrolling.acceleration
+        # apply key input
+        if pygame.key.get_pressed()[pygame.K_UP]:
+            layer_scrolling.current_acceleration += layer_scrolling.acceleration_up
+        if pygame.key.get_pressed()[pygame.K_DOWN]:
+            layer_scrolling.current_acceleration += layer_scrolling.acceleration_down
+
+        # apply acceleration
+        layer_scrolling.velocity += layer_scrolling.current_acceleration
+
+        # apply damping
+        layer_scrolling.velocity *= 1 - layer_scrolling.damping
+
+        # move layer
         layer_rect.bottom += int(layer_scrolling.velocity)
 
         # keep layer in bounds
@@ -96,9 +115,6 @@ class Level:
             layer_rect.top = 0
         if layer_rect.bottom < self.screen.get_rect().bottom:
             layer_rect.bottom = self.screen.get_rect().bottom
-
-        # damping
-        layer_scrolling.velocity *= layer_scrolling.scrolling_damping
 
         # draw layer
         self.screen.blit(layer_image, layer_rect.topleft)

@@ -26,6 +26,6 @@ while active:
         if event.type == pygame.QUIT:
             active = False
 
-    Window.update(events)
+    Window.update(events, clock)
     pygame.display.update()
     clock.tick(60)

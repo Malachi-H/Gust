@@ -9,16 +9,18 @@ from dataclasses import Field, dataclass
 from pygame.mask import Mask
 from pygame.sprite import Group, GroupSingle
 from typing import Literal, List
+from pygame.time import Clock
 
 
 @dataclass
 class ScrollingValues:
-    acceleration_gravity = -0.1
-    acceleration_up = 1
-    acceleration_down = -1
+    acceleration_gravity = -100
+    acceleration_up = 200
+    acceleration_down = -200
     current_acceleration: float = 0
     velocity: float = 0
-    damping: float = 0.05
+    damping: float = 0.5
+    layer_order: float = 1  # higher = closer to screen
 
     def multiply_attribute(self, attribute_name: str, value: float) -> None:
         attribute = getattr(self, attribute_name)
@@ -33,7 +35,7 @@ class Clouds(Sprite):
         self.image = pygame.transform.scale(self.image, dimensions)
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.topleft = (0, 0)
+        self.rect.topleft = (0, screen.get_rect().bottom)
 
 
 class Wind(Sprite):
@@ -56,7 +58,7 @@ class Level:
         self.player.add(Player(surface=self.screen))
 
         # Background
-        self.background_image = pygame.image.load("Assets\Background\BG_V3.png")
+        self.background_image = pygame.image.load("Assets\\Background\\BG_V3.png")
         self.background_rect = self.background_image.get_rect()
         self.background_rect.bottomleft = (0, screen.get_rect().bottom)
 
@@ -71,27 +73,23 @@ class Level:
         self.wind.add(wind)
 
         # Scrolling
-        self.cloud_scrolling = ScrollingValues()
-        self.cloud_scrolling.multiply_attribute("acceleration_up", 2)
-        self.cloud_scrolling.multiply_attribute("acceleration_down", 2)
-        self.cloud_scrolling.multiply_attribute("acceleration_gravity", 2)
-        # self.cloud_scrolling.multiply_attribute("damping", 2)
-
-        self.wind_scrolling = ScrollingValues()
-        self.wind_scrolling.multiply_attribute("acceleration_up", 2)
-        self.wind_scrolling.multiply_attribute("acceleration_down", 2)
-        self.wind_scrolling.multiply_attribute("acceleration_gravity", 2)
-        # self.wind_scrolling.multiply_attribute("damping", 2)
-
-        self.background_scrolling = ScrollingValues()
+        self.cloud_scrolling = ScrollingValues(layer_order=1.1)
+        self.wind_scrolling = ScrollingValues(layer_order=1.1)
+        self.background_scrolling = ScrollingValues(layer_order=1)
 
     def move_layer(
         self,
         layer_scrolling: ScrollingValues,
         layer_rect: pygame.Rect,
         layer_image: Surface,
+        clock: Clock,
     ) -> None:
+        # delta time
+        dt = clock.get_time() / 1000
+
+        # reset acceleration
         layer_scrolling.current_acceleration = 0
+
         # apply gravity
         layer_scrolling.current_acceleration += layer_scrolling.acceleration_gravity
 
@@ -104,22 +102,29 @@ class Level:
         # apply acceleration
         layer_scrolling.velocity += layer_scrolling.current_acceleration
 
+        # apply parallax
+        layer_scrolling.velocity *= layer_scrolling.layer_order
+
         # apply damping
-        layer_scrolling.velocity *= 1 - layer_scrolling.damping
+        # layer_scrolling.velocity += 1 - 1 / layer_scrolling.velocity
 
         # move layer
-        layer_rect.bottom += int(layer_scrolling.velocity)
+        layer_rect.bottom += int(layer_scrolling.velocity * dt)
 
         # keep layer in bounds
         if layer_rect.top > 0:
             layer_rect.top = 0
+            layer_scrolling.velocity = 0
+            layer_scrolling.current_acceleration = 0
         if layer_rect.bottom < self.screen.get_rect().bottom:
             layer_rect.bottom = self.screen.get_rect().bottom
+            layer_scrolling.velocity = 0
+            layer_scrolling.current_acceleration = 0
 
         # draw layer
         self.screen.blit(layer_image, layer_rect.topleft)
 
-    def update_scrolling(self) -> None:
+    def update_scrolling(self, clock) -> None:
         wind = [self.wind_scrolling, self.wind.sprite.rect, self.wind.sprite.image]
         cloud = [
             self.cloud_scrolling,
@@ -133,14 +138,14 @@ class Level:
         ]
 
         for layer_scrolling, layer_rect, layer_image in [background, wind, cloud]:
-            self.move_layer(layer_scrolling, layer_rect, layer_image)
+            self.move_layer(layer_scrolling, layer_rect, layer_image, clock)
 
     def is_collision(self, sprite, group, collide_type) -> None:
         collision = pygame.sprite.spritecollideany(sprite, group, collide_type)
         return collision
 
-    def update(self, events: list[Event]) -> None:
-        self.update_scrolling()
+    def update(self, events: list[Event], clock: Clock) -> None:
+        self.update_scrolling(clock)
         self.player.update(events)
         collide_cloud = self.is_collision(
             self.player.sprite, self.clouds, pygame.sprite.collide_mask

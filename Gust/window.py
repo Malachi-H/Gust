@@ -38,6 +38,6 @@ class Window:
 
         
     
-    def update(self, events: list[Event]) -> None:
-        self.Level.update(events)
+    def update(self, events: list[Event], clock) -> None:
+        self.Level.update(events, clock)
         

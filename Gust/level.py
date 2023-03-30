@@ -1,30 +1,13 @@
 from enum import Enum
+import math
 from pygame.surface import Surface
 import pygame
-import struct
 from player import Player
 from pygame.event import Event
 from pygame.sprite import Sprite
-from dataclasses import Field, dataclass
-from pygame.mask import Mask
 from pygame.sprite import Group, GroupSingle
-from typing import Literal, List
 from pygame.time import Clock
-
-
-@dataclass
-class ScrollingValues:
-    acceleration_gravity = -100
-    acceleration_up = 200
-    acceleration_down = -200
-    current_acceleration: float = 0
-    velocity: float = 0
-    damping: float = 0.5
-    layer_order: float = 1  # higher = closer to screen
-
-    def multiply_attribute(self, attribute_name: str, value: float) -> None:
-        attribute = getattr(self, attribute_name)
-        setattr(self, attribute_name, attribute * value)
+import scrolling_values
 
 
 class Clouds(Sprite):
@@ -35,7 +18,7 @@ class Clouds(Sprite):
         self.image = pygame.transform.scale(self.image, dimensions)
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.topleft = (0, screen.get_rect().bottom)
+        self.rect.bottomleft = (0, screen.get_rect().bottom)
 
 
 class Wind(Sprite):
@@ -46,7 +29,7 @@ class Wind(Sprite):
         self.image = pygame.transform.scale(self.image, dimensions)
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.topleft = (0, 0)
+        self.rect.bottomleft = (0, screen.get_rect().bottom)
 
 
 class Level:
@@ -72,93 +55,68 @@ class Level:
         wind = Wind(screen=self.screen, dimensions=self.background_rect.size)
         self.wind.add(wind)
 
-        # Scrolling
-        self.cloud_scrolling = ScrollingValues(layer_order=1.1)
-        self.wind_scrolling = ScrollingValues(layer_order=1.1)
-        self.background_scrolling = ScrollingValues(layer_order=1)
-
-    def move_layer(
-        self,
-        layer_scrolling: ScrollingValues,
-        layer_rect: pygame.Rect,
-        layer_image: Surface,
-        clock: Clock,
-    ) -> None:
-        # delta time
-        dt = clock.get_time() / 1000
-
-        # reset acceleration
-        layer_scrolling.current_acceleration = 0
-
+    def update_scrolling_velocity(self) -> None:
         # apply gravity
-        layer_scrolling.current_acceleration += layer_scrolling.acceleration_gravity
+        scrolling_values.current_acceleration = scrolling_values.acceleration_gravity
 
         # apply key input
         if pygame.key.get_pressed()[pygame.K_UP]:
-            layer_scrolling.current_acceleration += layer_scrolling.acceleration_up
+            scrolling_values.current_acceleration += scrolling_values.acceleration_up
         if pygame.key.get_pressed()[pygame.K_DOWN]:
-            layer_scrolling.current_acceleration += layer_scrolling.acceleration_down
+            scrolling_values.current_acceleration += scrolling_values.acceleration_down
 
         # apply acceleration
-        layer_scrolling.velocity += layer_scrolling.current_acceleration
+        scrolling_values.velocity += scrolling_values.current_acceleration
 
-        # apply parallax
-        layer_scrolling.velocity *= layer_scrolling.layer_order
+    def move_layer(self, clock: Clock) -> None:
+        # compute new layer position
+        self.update_scrolling_velocity()
 
-        # apply damping
-        # layer_scrolling.velocity += 1 - 1 / layer_scrolling.velocity
+        wind = [self.wind.sprite.rect, self.wind.sprite.image]
+        cloud = [self.clouds.sprite.rect, self.clouds.sprite.image]
+        background = [self.background_rect, self.background_image]
 
-        # move layer
-        layer_rect.bottom += int(layer_scrolling.velocity * dt)
+        # repeat for each layer
+        for layer_rect, layer_image in [background, wind, cloud]:
+            # delta time for frame independence
+            dt = clock.get_time() / 1000
 
-        # keep layer in bounds
-        if layer_rect.top > 0:
-            layer_rect.top = 0
-            layer_scrolling.velocity = 0
-            layer_scrolling.current_acceleration = 0
-        if layer_rect.bottom < self.screen.get_rect().bottom:
-            layer_rect.bottom = self.screen.get_rect().bottom
-            layer_scrolling.velocity = 0
-            layer_scrolling.current_acceleration = 0
+            parallax = 1
+            if layer_rect == self.background_rect:
+                parallax = 1
+            elif layer_rect == self.clouds.sprite.rect:
+                parallax = 2
+            elif layer_rect == self.wind.sprite.rect:
+                parallax = 2
 
-        # draw layer
-        self.screen.blit(layer_image, layer_rect.topleft)
+            # move layer
+            layer_rect.bottom += (scrolling_values.velocity * parallax) * dt
 
-    def update_scrolling(self, clock) -> None:
-        wind = [self.wind_scrolling, self.wind.sprite.rect, self.wind.sprite.image]
-        cloud = [
-            self.cloud_scrolling,
-            self.clouds.sprite.rect,
-            self.clouds.sprite.image,
-        ]
-        background = [
-            self.background_scrolling,
-            self.background_rect,
-            self.background_image,
-        ]
+            # keep layer in bounds
+            if layer_rect.top > 0:
+                # set every layer to the top if any layer is above the top
+                for rect, _ in [background, wind, cloud]:
+                    rect.top = 0
+                scrolling_values.velocity = 0
+                scrolling_values.current_acceleration = 0
+            if layer_rect.bottom < self.screen.get_rect().bottom:
+                # set every layer to the bottom if any layer is above the bottom
+                for rect, _ in [background, wind, cloud]:
+                    rect.bottom = self.screen.get_rect().bottom
+                scrolling_values.velocity = 0
+                scrolling_values.current_acceleration = 0
 
-        for layer_scrolling, layer_rect, layer_image in [background, wind, cloud]:
-            self.move_layer(layer_scrolling, layer_rect, layer_image, clock)
+            # draw layer
+            self.screen.blit(layer_image, layer_rect.topleft)
 
-    def is_collision(self, sprite, group, collide_type) -> None:
-        collision = pygame.sprite.spritecollideany(sprite, group, collide_type)
-        return collision
+    def wind_collision(
+        self, player_sprite, group: Group | GroupSingle, collide_type
+    ) -> None:
+        collision = pygame.sprite.spritecollideany(player_sprite, group, collide_type)
+        if collision:
+            scrolling_values.current_acceleration += scrolling_values.acceleration_up
 
     def update(self, events: list[Event], clock: Clock) -> None:
-        self.update_scrolling(clock)
+        self.move_layer(clock)
         self.player.update(events)
-        collide_cloud = self.is_collision(
-            self.player.sprite, self.clouds, pygame.sprite.collide_mask
-        )
-
-        collide_wind = self.is_collision(
-            self.player.sprite, self.wind, pygame.sprite.collide_mask
-        )
-
-        if collide_cloud != None:
-            print("collide_cloud")
-
-        if collide_wind != None:
-            self.wind_scrolling.velocity += 2
-            self.cloud_scrolling.velocity += 2
-            self.background_scrolling.velocity += 1
+        self.wind_collision(self.player.sprite, self.wind, pygame.sprite.collide_mask)

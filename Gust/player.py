@@ -12,6 +12,9 @@ class Direction(Enum):
     STATIONARY = auto()
 
 
+ACCELERATION_VALUE = 0.2
+
+
 class Player(Sprite):
     def __init__(self, surface: Surface) -> None:
         Sprite.__init__(self)
@@ -45,15 +48,19 @@ class Player(Sprite):
         if key == pygame.K_LEFT:
             self.intended_direction = key
         if key[pygame.K_LEFT] and self.intended_direction != Direction.RIGHT:
-            self.velocity.x += -1
+            if self.velocity.x > 0:
+                self.velocity.x = 0
+            self.velocity.x += -ACCELERATION_VALUE
         elif key[pygame.K_RIGHT] and self.intended_direction != Direction.LEFT:
-            self.velocity.x += 1
+            if self.velocity.x < 0:
+                self.velocity.x = 0
+            self.velocity.x += ACCELERATION_VALUE
 
     def update_position(self) -> None:
         self.rect.x += int(self.velocity.x)
         self.rect.y += int(self.velocity.y)
         # damping / friction
-        self.velocity *= 0.95
+        self.velocity *= 0.98
 
     def update(self, events: List[Event]) -> None:
         self.get_input(events)

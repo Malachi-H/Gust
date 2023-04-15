@@ -44,7 +44,11 @@ class Background(Sprite):
         Sprite.__init__(self)
 
         self.image = pygame.image.load("Assets\\Background\\BG.png")
-        dimensions = (width, self.image.get_rect().height)
+        scale_factor = width / self.image.get_rect().width
+        dimensions = (
+            self.image.get_rect().width * scale_factor,
+            self.image.get_rect().height * scale_factor,
+        )
         self.image = pygame.transform.scale(self.image, dimensions)
         self.rect = self.image.get_rect()
         self.position = pygame.Vector2(self.rect.center)

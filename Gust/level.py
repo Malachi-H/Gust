@@ -12,11 +12,13 @@ import scrolling_values
 
 
 class Clouds(Sprite):
-    def __init__(self, screen: Surface, dimensions: tuple[int, int]):
+    def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
         Sprite.__init__(self)
 
         self.image = pygame.image.load("Assets\\Obstacles\\ObstacleMap.png")
-        self.image = pygame.transform.scale(self.image, dimensions)
+        self.image = pygame.transform.smoothscale(
+            self.image, (background_dimensions[0], background_dimensions[1] * 2)
+        )
         self.rect = self.image.get_rect()
         self.position = pygame.Vector2(self.rect.center)
         self.mask = pygame.mask.from_surface(self.image)
@@ -24,11 +26,13 @@ class Clouds(Sprite):
 
 
 class Wind(Sprite):
-    def __init__(self, screen: Surface, dimensions: tuple[int, int]):
+    def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
         Sprite.__init__(self)
 
         self.image = pygame.image.load("Assets\\Wind\\Wind.png")
-        self.image = pygame.transform.scale(self.image, dimensions)
+        self.image = pygame.transform.smoothscale(
+            self.image, (background_dimensions[0], background_dimensions[1] * 2)
+        )
         self.rect = self.image.get_rect()
         self.position = pygame.Vector2(self.rect.center)
         self.mask = pygame.mask.from_surface(self.image)
@@ -39,7 +43,7 @@ class Background(Sprite):
     def __init__(self, screen: Surface, width: int):
         Sprite.__init__(self)
 
-        self.image = pygame.image.load("Assets\\Background\\BG_V3.png")
+        self.image = pygame.image.load("Assets\\Background\\BG.png")
         dimensions = (width, self.image.get_rect().height)
         self.image = pygame.transform.scale(self.image, dimensions)
         self.rect = self.image.get_rect()
@@ -65,12 +69,17 @@ class Level:
         # Clouds
         self.clouds = pygame.sprite.GroupSingle()
         self.clouds.add(
-            Clouds(screen=self.screen, dimensions=self.background.sprite.rect.size)
+            Clouds(
+                screen=self.screen,
+                background_dimensions=self.background.sprite.rect.size,
+            )
         )
 
         # Wind
         self.wind = pygame.sprite.GroupSingle()
-        wind = Wind(screen=self.screen, dimensions=self.background.sprite.rect.size)
+        wind = Wind(
+            screen=self.screen, background_dimensions=self.background.sprite.rect.size
+        )
         self.wind.add(wind)
 
     def update_scrolling_velocity(self) -> None:

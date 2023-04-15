@@ -27,11 +27,14 @@ class Player(Sprite):
         self.rect.y = int(self.display_surface.get_rect().height * 0.75)
         self.velocity = pygame.Vector2(0, 0)
         self.intended_direction = Direction.STATIONARY
+        self.exact_center = pygame.Vector2(self.rect.center)
 
     def draw(self) -> None:
         self.display_surface.blit(self.image, self.rect)
 
     def get_input(self, events: List[Event]) -> None:
+        # * Code works but can probably be simplified by tracking most recent key press
+
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -45,8 +48,6 @@ class Player(Sprite):
                     self.intended_direction = Direction.LEFT
 
         key = pygame.key.get_pressed()
-        if key == pygame.K_LEFT:
-            self.intended_direction = key
         if key[pygame.K_LEFT] and self.intended_direction != Direction.RIGHT:
             if self.velocity.x > 0:
                 self.velocity.x = 0
@@ -57,7 +58,8 @@ class Player(Sprite):
             self.velocity.x += ACCELERATION_VALUE
 
     def update_position(self) -> None:
-        self.rect.x += int(self.velocity.x)
+        self.exact_center += self.velocity.x, self.velocity.y
+        self.rect.center = int(self.exact_center.x), int(self.exact_center.y)
         self.rect.y += int(self.velocity.y)
         # damping / friction
         self.velocity *= 0.98

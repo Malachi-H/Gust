@@ -15,7 +15,7 @@ class Clouds(Sprite):
     def __init__(self, screen: Surface, dimensions: tuple[int, int]):
         Sprite.__init__(self)
 
-        self.image = pygame.image.load("Assets\\Obstacles\\ObstacleMapV2.png")
+        self.image = pygame.image.load("Assets\\Obstacles\\ObstacleMap.png")
         self.image = pygame.transform.scale(self.image, dimensions)
         self.rect = self.image.get_rect()
         self.position = pygame.Vector2(self.rect.center)

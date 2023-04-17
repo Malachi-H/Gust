@@ -5,10 +5,8 @@ from typing import Tuple
 import level
 from pygame.event import Event
 import HelperFunctions
+from screen_dimensions import screen_dimensions
 
-
-screen_dimension = (720 / 2, 480 / 2)
-# screen_dimension = (4,3)
 
 
 class Window:
@@ -26,7 +24,7 @@ class Window:
     def __init__(self) -> None:
         os.environ["SDL_VIDEO_CENTERED"] = "1"
         self.screen_flags = pygame.RESIZABLE | pygame.SCALED
-        self.screen = pygame.display.set_mode(screen_dimension, self.screen_flags)
+        self.screen = pygame.display.set_mode(screen_dimensions, self.screen_flags)
         self.Level = level.Level(self.screen)
 
     def update(self, events: list[Event], clock) -> None:

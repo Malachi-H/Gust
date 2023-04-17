@@ -5,6 +5,8 @@ from pygame.event import Event
 from typing import List
 from pygame.sprite import Sprite
 
+from screen_dimensions import scale_factor
+
 
 class Direction(Enum):
     LEFT = auto()
@@ -12,16 +14,16 @@ class Direction(Enum):
     STATIONARY = auto()
 
 
-ACCELERATION_VALUE = 0.2
+ACCELERATION_VALUE = 100 * scale_factor
 
 
 class Player(Sprite):
-    def __init__(self, surface: Surface) -> None:
+    def __init__(self, screen: Surface) -> None:
         Sprite.__init__(self)
 
-        self.image = pygame.Surface((10, 20))
+        self.display_surface = screen
+        self.image = pygame.Surface((10 * scale_factor, 20 * scale_factor))
         self.image.fill("orange")
-        self.display_surface = surface
         self.rect = self.image.get_rect()
         self.rect.x = self.display_surface.get_rect().centerx
         self.rect.y = int(self.display_surface.get_rect().height * 0.75)
@@ -57,14 +59,17 @@ class Player(Sprite):
                 self.velocity.x = 0
             self.velocity.x += ACCELERATION_VALUE
 
-    def update_position(self) -> None:
-        self.exact_center += self.velocity.x, self.velocity.y
+    def update_position(self, clock: pygame.time.Clock) -> None:
+        dt = clock.get_time() / 1000
+        self.exact_center += (
+            self.velocity.x * dt,
+            self.velocity.y * dt,
+        )
         self.rect.center = int(self.exact_center.x), int(self.exact_center.y)
-        self.rect.y += int(self.velocity.y)
         # damping / friction
-        self.velocity *= 0.98
+        self.velocity *= 1 - 1
 
-    def update(self, events: List[Event]) -> None:
+    def update(self, events: List[Event], clock) -> None:
         self.get_input(events)
-        self.update_position()
+        self.update_position(clock)
         self.draw()

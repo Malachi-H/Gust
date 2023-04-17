@@ -11,6 +11,7 @@ from pygame.time import Clock
 import scrolling_values
 
 
+
 class Clouds(Sprite):
     def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
         Sprite.__init__(self)
@@ -26,6 +27,8 @@ class Clouds(Sprite):
 
 
 class Wind(Sprite):
+    # * Wind Direction will be stored as a colour value in the texture which is read off to measure the hue and saturation values. The Hue will indicate the direction of the wind as a value between 0 and 1 translating to between 0 and 360 degrees. 0 degrees will equal directly right. 90 degrees (0.25 as hue value) will be directly up. As such the direction will rotate counter-clockwise. The saturation of the colour as a value between 0 and 1 will determine wind speed as a percentage of maximum speed.
+
     def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
         Sprite.__init__(self)
 
@@ -62,7 +65,7 @@ class Level:
 
         # Player
         self.player = pygame.sprite.GroupSingle()
-        self.player.add(Player(surface=self.screen))
+        self.player.add(Player(screen=self.screen))
 
         # Background
         self.background = pygame.sprite.GroupSingle()
@@ -161,5 +164,5 @@ class Level:
 
     def update(self, events: list[Event], clock: Clock) -> None:
         self.move_layer(clock)
-        self.player.update(events)
+        self.player.update(events, clock)
         self.wind_collision(self.player.sprite, self.wind, pygame.sprite.collide_mask)

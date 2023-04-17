@@ -1,0 +1,7 @@
+Needed to scale speed of player when window reselution changes. Otherwise the consistent pixle per seccond speed would be inversly preportialal to the screans scale. 
+Eg. 32 px width -> cross window with in 10 sec
+Eg. 64 px width -> cross window with in 20 sec
+
+Bug arose when applying scale factor didn't make the speed consistant. Solution: Fame independence was missing from the player movement calculations. As such, when the resolution decreased, despite the scale factor, the player would move faster as a result of the lessened load on the computer.
+Identified using a desk check on google sheets.
+https://i.imgur.com/RSRaBUN.png

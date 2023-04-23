@@ -9,6 +9,7 @@ from pygame.sprite import Sprite
 from pygame.sprite import Group, GroupSingle
 from pygame.time import Clock
 import scrolling_values
+from screen_dimensions import scale_factor
 
 
 
@@ -122,7 +123,7 @@ class Level:
                 parallax = 2
 
             # move layer
-            sprite.position += 0, (scrolling_values.velocity * parallax) * dt
+            sprite.position += 0, (scrolling_values.velocity * parallax) * dt * scale_factor
             sprite.rect.center = sprite.position
 
             # keep layer in bounds

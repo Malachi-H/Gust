@@ -67,7 +67,7 @@ class Player(Sprite):
         )
         self.rect.center = int(self.exact_center.x), int(self.exact_center.y)
         # damping / friction
-        self.velocity *= 1 - 1
+        self.velocity *= 1 - 0.1
 
     def update(self, events: List[Event], clock) -> None:
         self.get_input(events)

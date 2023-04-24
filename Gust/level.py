@@ -12,7 +12,6 @@ import scrolling_values
 from screen_dimensions import scale_factor
 
 
-
 class Clouds(Sprite):
     def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
         Sprite.__init__(self)
@@ -48,10 +47,10 @@ class Background(Sprite):
         Sprite.__init__(self)
 
         self.image = pygame.image.load("Assets\\Background\\BG.png")
-        scale_factor = width / self.image.get_rect().width
+        img_scale_factor = width / self.image.get_rect().width
         dimensions = (
-            self.image.get_rect().width * scale_factor,
-            self.image.get_rect().height * scale_factor,
+            self.image.get_rect().width * img_scale_factor,
+            self.image.get_rect().height * img_scale_factor,
         )
         self.image = pygame.transform.scale(self.image, dimensions)
         self.rect = self.image.get_rect()
@@ -123,7 +122,10 @@ class Level:
                 parallax = 2
 
             # move layer
-            sprite.position += 0, (scrolling_values.velocity * parallax) * dt * scale_factor
+            sprite.position += (
+                0,
+                (scrolling_values.velocity * parallax) * dt * scale_factor,
+            )
             sprite.rect.center = sprite.position
 
             # keep layer in bounds

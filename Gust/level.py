@@ -1,5 +1,6 @@
 from enum import Enum
 import math
+from time import sleep
 from typing import Protocol
 from pygame.surface import Surface
 import pygame
@@ -18,28 +19,34 @@ class Clouds(Sprite):
 
         self.image = pygame.image.load("Assets\\Obstacles\\ObstacleMap.png")
         self.image = pygame.transform.smoothscale(
-            self.image, (background_dimensions[0], background_dimensions[1] * 2)
+            self.image,
+            (
+                background_dimensions[0],
+                background_dimensions[1] * 2 - screen.get_height(),
+            ),
         )
         self.rect = self.image.get_rect()
+        self.rect.bottomleft = screen.get_rect().bottomleft
         self.position = pygame.Vector2(self.rect.center)
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.bottomleft = (0, screen.get_rect().bottom)
 
 
 class Wind(Sprite):
-    # * Wind Direction will be stored as a colour value in the texture which is read off to measure the hue and saturation values. The Hue will indicate the direction of the wind as a value between 0 and 1 translating to between 0 and 360 degrees. 0 degrees will equal directly right. 90 degrees (0.25 as hue value) will be directly up. As such the direction will rotate counter-clockwise. The saturation of the colour as a value between 0 and 1 will determine wind speed as a percentage of maximum speed.
-
     def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
         Sprite.__init__(self)
 
         self.image = pygame.image.load("Assets\\Wind\\Wind.png")
         self.image = pygame.transform.smoothscale(
-            self.image, (background_dimensions[0], background_dimensions[1] * 2)
+            self.image,
+            (
+                background_dimensions[0],
+                background_dimensions[1] * 2 - screen.get_height(),
+            ),
         )
         self.rect = self.image.get_rect()
+        self.rect.bottomleft = screen.get_rect().bottomleft
         self.position = pygame.Vector2(self.rect.center)
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.bottomleft = (0, screen.get_rect().bottom)
 
 
 class Background(Sprite):
@@ -54,9 +61,9 @@ class Background(Sprite):
         )
         self.image = pygame.transform.scale(self.image, dimensions)
         self.rect = self.image.get_rect()
+        self.rect.bottomleft = screen.get_rect().bottomleft
         self.position = pygame.Vector2(self.rect.center)
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.bottomleft = (0, screen.get_rect().bottom)
 
 
 class Level:
@@ -141,7 +148,7 @@ class Level:
 
                 scrolling_values.velocity = 0
                 scrolling_values.current_acceleration = 0
-            if sprite.rect.bottom < self.screen.get_rect().bottom:
+            if sprite.rect.bottom <= self.screen.get_rect().bottom:
                 # set every layer to the bottom if any layer is above the bottom
                 for layer in [
                     self.wind.sprite,
@@ -165,7 +172,27 @@ class Level:
         if collision:
             scrolling_values.current_acceleration += scrolling_values.acceleration_up
 
+    def obstacle_collision(
+        self, player_sprite, group: Group | GroupSingle, collide_type
+    ) -> None:
+        collision = pygame.sprite.spritecollideany(player_sprite, group, collide_type)
+        if collision:
+            scrolling_values.current_acceleration = 0
+            sleep(0.5)
+            scrolling_values.velocity = 0
+            self.player.sprite.reset_position()
+            for sprite in [
+                self.wind.sprite,
+                self.clouds.sprite,
+                self.background.sprite,
+            ]:
+                sprite.rect.bottom = self.screen.get_rect().bottom
+                sprite.position = pygame.Vector2(sprite.rect.center)
+
     def update(self, events: list[Event], clock: Clock) -> None:
         self.move_layer(clock)
         self.player.update(events, clock)
         self.wind_collision(self.player.sprite, self.wind, pygame.sprite.collide_mask)
+        self.obstacle_collision(
+            self.player.sprite, self.clouds, pygame.sprite.collide_mask
+        )

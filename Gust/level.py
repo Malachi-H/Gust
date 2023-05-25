@@ -13,66 +13,13 @@ import scrolling_values
 from screen_dimensions import scale_factor
 
 
-class Clouds(Sprite):
-    def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
-        Sprite.__init__(self)
-
-        self.image = pygame.image.load("Assets\\Obstacles\\ObstacleMap.png")
-        self.image = pygame.transform.smoothscale(
-            self.image,
-            (
-                background_dimensions[0],
-                background_dimensions[1] * 2 - screen.get_height(),
-            ),
-        )
-        self.rect = self.image.get_rect()
-        self.rect.bottomleft = screen.get_rect().bottomleft
-        self.position = pygame.Vector2(self.rect.center)
-        self.mask = pygame.mask.from_surface(self.image)
-
-
-class Wind(Sprite):
-    def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
-        Sprite.__init__(self)
-
-        self.image = pygame.image.load("Assets\\Wind\\Wind.png")
-        self.image = pygame.transform.smoothscale(
-            self.image,
-            (
-                background_dimensions[0],
-                background_dimensions[1] * 2 - screen.get_height(),
-            ),
-        )
-        self.rect = self.image.get_rect()
-        self.rect.bottomleft = screen.get_rect().bottomleft
-        self.position = pygame.Vector2(self.rect.center)
-        self.mask = pygame.mask.from_surface(self.image)
-
-
-class Background(Sprite):
-    def __init__(self, screen: Surface, width: int):
-        Sprite.__init__(self)
-
-        self.image = pygame.image.load("Assets\\Background\\BG.png")
-        img_scale_factor = width / self.image.get_rect().width
-        dimensions = (
-            self.image.get_rect().width * img_scale_factor,
-            self.image.get_rect().height * img_scale_factor,
-        )
-        self.image = pygame.transform.scale(self.image, dimensions)
-        self.rect = self.image.get_rect()
-        self.rect.bottomleft = screen.get_rect().bottomleft
-        self.position = pygame.Vector2(self.rect.center)
-        self.mask = pygame.mask.from_surface(self.image)
-
-
 class Level:
     def __init__(self, screen: Surface):
         self.screen = screen
 
         # Player
         self.player = pygame.sprite.GroupSingle()
-        self.player.add(Player(screen=self.screen))
+        self.player.add(Player(display_surface=self.screen))
 
         # Background
         self.background = pygame.sprite.GroupSingle()
@@ -111,7 +58,7 @@ class Level:
         # reset acceleration
         scrolling_values.current_acceleration = 0
 
-    def move_layer(self, clock: Clock) -> None:
+    def move_and_draw_layer(self, clock: Clock) -> None:
         # compute new layer position
         self.update_scrolling_velocity()
 
@@ -190,9 +137,62 @@ class Level:
                 sprite.position = pygame.Vector2(sprite.rect.center)
 
     def update(self, events: list[Event], clock: Clock) -> None:
-        self.move_layer(clock)
+        self.move_and_draw_layer(clock)
         self.player.update(events, clock)
         self.wind_collision(self.player.sprite, self.wind, pygame.sprite.collide_mask)
         self.obstacle_collision(
             self.player.sprite, self.clouds, pygame.sprite.collide_mask
         )
+
+
+class Background(Sprite):
+    def __init__(self, screen: Surface, width: int):
+        Sprite.__init__(self)
+
+        self.image = pygame.image.load("Assets\\Background\\BG.png")
+        img_scale_factor = width / self.image.get_rect().width
+        dimensions = (
+            self.image.get_rect().width * img_scale_factor,
+            self.image.get_rect().height * img_scale_factor,
+        )
+        self.image = pygame.transform.scale(self.image, dimensions)
+        self.rect = self.image.get_rect()
+        self.rect.bottomleft = screen.get_rect().bottomleft
+        self.position = pygame.Vector2(self.rect.center)
+        self.mask = pygame.mask.from_surface(self.image)
+
+
+class Clouds(Sprite):
+    def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
+        Sprite.__init__(self)
+
+        self.image = pygame.image.load("Assets\\Obstacles\\ObstacleMap.png")
+        self.image = pygame.transform.smoothscale(
+            self.image,
+            (
+                background_dimensions[0],
+                background_dimensions[1] * 2 - screen.get_height(),
+            ),
+        )
+        self.rect = self.image.get_rect()
+        self.rect.bottomleft = screen.get_rect().bottomleft
+        self.position = pygame.Vector2(self.rect.center)
+        self.mask = pygame.mask.from_surface(self.image)
+
+
+class Wind(Sprite):
+    def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
+        Sprite.__init__(self)
+
+        self.image = pygame.image.load("Assets\\Wind\\Wind.png")
+        self.image = pygame.transform.smoothscale(
+            self.image,
+            (
+                background_dimensions[0],
+                background_dimensions[1] * 2 - screen.get_height(),
+            ),
+        )
+        self.rect = self.image.get_rect()
+        self.rect.bottomleft = screen.get_rect().bottomleft
+        self.position = pygame.Vector2(self.rect.center)
+        self.mask = pygame.mask.from_surface(self.image)

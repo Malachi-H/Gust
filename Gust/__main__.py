@@ -16,16 +16,16 @@ class Game:
             # pump = False augment is broken so event.get() can only be used once per frame with the lines result passed to other files
             events = pygame.event.get()
             for event in events:
-                if event.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                if (
+                    event.type == pygame.QUIT
+                    or pygame.key.get_pressed()[pygame.K_ESCAPE]
+                ):
                     active = False
 
-
-            
             self.Window.update(events, self.clock)
             pygame.display.update()
-            self.clock.tick(120)
+            self.clock.tick(60)
 
 
 game = Game(Window())
 game.run()
-

@@ -18,10 +18,10 @@ ACCELERATION_VALUE = 50 * scale_factor
 
 
 class Player(Sprite):
-    def __init__(self, screen: Surface) -> None:
+    def __init__(self, display_surface: Surface) -> None:
         Sprite.__init__(self)
 
-        self.display_surface = screen
+        self.display_surface = display_surface
         self.image = pygame.Surface((10 * scale_factor, 20 * scale_factor))
         self.image.fill("orange")
         self.rect = self.image.get_rect()

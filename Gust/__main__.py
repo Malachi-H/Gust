@@ -18,7 +18,11 @@ class Game:
             for event in events:
                 if (
                     event.type == pygame.QUIT
-                    or pygame.key.get_pressed()[pygame.K_ESCAPE]
+                    or pygame.key.get_pressed()[pygame.K_LCTRL]
+                    and pygame.key.get_pressed()[pygame.K_q]
+                    
+                    or pygame.key.get_pressed()[pygame.K_RCTRL]
+                    and pygame.key.get_pressed()[pygame.K_q]
                 ):
                     active = False
 

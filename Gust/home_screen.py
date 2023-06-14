@@ -13,7 +13,8 @@ class HomeScreen:
     def __init__(self, screen: Surface) -> None:
         self.display_surface = screen
         self.main_screen = load_full_screen_image(
-            "Assets\\Main Screen\\main_screen.png"
+            "Assets\\Main Screen\\Main_screen_high_res.png",
+            "Assets\\Main Screen\\Main_Screen_Background\\main_screen.png",
         )
         self.level_buttons: pygame.sprite.Group = self.create_level_buttons()
         self.button_pressed: None | ButtonType = None
@@ -109,19 +110,23 @@ class Button(pygame.sprite.Sprite):
         if button_type == ButtonType.level_1:
             return {
                 "unselected": load_full_screen_image(
-                    "Assets\\Main Screen\\level_1_button.png"
+                    "Assets\\Main Screen\\Level_Buttons\\level_1_button_high_res.png",
+                    "Assets\\Main Screen\\Level_Buttons\\level_1_button.png",
                 ),
                 "selected": load_full_screen_image(
-                    "Assets\\Main Screen\\level_1_button_selected.png"
+                    "Assets\\Main Screen\\Level_Buttons\\level_1_button_selected_high_res.png",
+                    "Assets\\Main Screen\\Level_Buttons\\level_1_button_selected.png",
                 ),
             }
         elif button_type == ButtonType.settings:
             return {
                 "unselected": load_full_screen_image(
-                    "Assets\\Main Screen\\setting_update.png"
+                    "Assets\\Main Screen\\setting_update_high_res.png",
+                    "Assets\\Main Screen\\Settings_Buttons\\setting_update.png",
                 ),
                 "selected": load_full_screen_image(
-                    "Assets\\Main Screen\\setting_update_selected.png"
+                    "Assets\\Main Screen\\Settings_Buttons\\setting_update_selected_high_res.png",
+                    "Assets\\Main Screen\\Settings_Buttons\\setting_update_selected.png",
                 ),
             }
 

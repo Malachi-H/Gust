@@ -47,9 +47,20 @@ class Level:
         # apply gravity
         scrolling_values.current_acceleration += scrolling_values.acceleration_gravity
         # apply key input
-        if pygame.key.get_pressed()[pygame.K_UP]:
+        up_keys = pygame.K_UP, pygame.K_w
+        down_keys = pygame.K_DOWN, pygame.K_s
+        up_key_pressed = False
+        down_key_pressed = False
+        for key in up_keys:
+            if pygame.key.get_pressed()[key]:
+                up_key_pressed = True
+        for key in down_keys:
+            if pygame.key.get_pressed()[key]:
+                down_key_pressed = True
+        
+        if up_key_pressed:
             scrolling_values.current_acceleration += scrolling_values.acceleration_up
-        if pygame.key.get_pressed()[pygame.K_DOWN]:
+        if down_key_pressed:
             scrolling_values.current_acceleration += scrolling_values.acceleration_down
 
         # apply acceleration

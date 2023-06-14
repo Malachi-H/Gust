@@ -37,24 +37,36 @@ class Player(Sprite):
     def get_input(self, events: List[Event]) -> None:
         # * Code works but can probably be simplified by tracking most recent key press
 
+        left_keys = pygame.K_LEFT, pygame.K_a
+        right_keys = pygame.K_RIGHT, pygame.K_d
+
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
+                if event.key in left_keys:
                     self.intended_direction = Direction.LEFT
-                elif event.key == pygame.K_RIGHT:
+                elif event.key in right_keys:
                     self.intended_direction = Direction.RIGHT
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
+                if event.key in left_keys:
                     self.intended_direction = Direction.RIGHT
-                elif event.key == pygame.K_RIGHT:
+                elif event.key in right_keys:
                     self.intended_direction = Direction.LEFT
 
-        key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT] and self.intended_direction != Direction.RIGHT:
+        pressed_keys = pygame.key.get_pressed()
+        left_pressed = False
+        right_pressed = False
+        for key in left_keys:
+            if pressed_keys[key]:
+                left_pressed = True
+        for key in right_keys:
+            if pressed_keys[key]:
+                right_pressed = True
+                
+        if left_pressed and self.intended_direction != Direction.RIGHT:
             if self.velocity.x > 0:
                 self.velocity.x = 0
             self.velocity.x += -ACCELERATION_VALUE
-        elif key[pygame.K_RIGHT] and self.intended_direction != Direction.LEFT:
+        elif right_pressed and self.intended_direction != Direction.LEFT:
             if self.velocity.x < 0:
                 self.velocity.x = 0
             self.velocity.x += ACCELERATION_VALUE

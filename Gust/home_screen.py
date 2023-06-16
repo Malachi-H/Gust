@@ -17,7 +17,7 @@ class HomeScreen:
             "Assets\\Main Screen\\Main_Screen_Background\\main_screen.png",
         )
         self.level_buttons: pygame.sprite.Group = self.create_level_buttons()
-        self.button_pressed: None | ButtonType = None
+        self.button_pressed: (None | ButtonType) = None
 
         mouse = pygame.mouse.get_pos()
         self.MouseCollider = MouseCollider(mouse, self.display_surface)
@@ -38,7 +38,7 @@ class HomeScreen:
         )
         return buttons
 
-    def check_and_handle_button_click(self, events, level_button):
+    def check_for_and_handle_button_click(self, events, level_button):
         mouse_up = pygame.MOUSEBUTTONUP in [
             event.type for event in events
         ]  # Button Up to make detection rising edge
@@ -48,11 +48,11 @@ class HomeScreen:
             elif level_button.button_type == ButtonType.settings:
                 self.button_pressed = ButtonType.settings
 
-    def handle_button_interaction(self, level_buttons, MouseCollider, events):
+    def detect_button_interaction(self, level_buttons, MouseCollider, events):
         for level_button in level_buttons:
             if pygame.sprite.collide_mask(MouseCollider, level_button):
                 level_button.image = level_button.image_list["selected"]
-                self.check_and_handle_button_click(events, level_button)
+                self.check_for_and_handle_button_click(events, level_button)
             else:
                 level_button.image = level_button.image_list["unselected"]
 
@@ -61,7 +61,7 @@ class HomeScreen:
         mouse = pygame.mouse.get_pos()
         self.level_buttons.update(events, self.MouseCollider)
         self.MouseCollider.update(mouse)
-        self.handle_button_interaction(self.level_buttons, self.MouseCollider, events)
+        self.detect_button_interaction(self.level_buttons, self.MouseCollider, events)
 
 
 class Button(pygame.sprite.Sprite):

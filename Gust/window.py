@@ -39,10 +39,13 @@ class Window:
             self.HomeScreen.update(events)
 
             if self.HomeScreen.button_pressed == ButtonType.level_1:
+                self.HomeScreen.button_pressed = None  # reset button_pressed so that it doesn't trigger again when screen is reloaded
                 self.GUI = GUI_Type.level
 
         if self.GUI == GUI_Type.level:
             self.level.update(events, clock)
+            if pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                self.GUI = GUI_Type.home_screen
 
 
 class GUI_Type(Enum):

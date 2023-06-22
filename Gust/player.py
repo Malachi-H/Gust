@@ -5,7 +5,7 @@ from pygame.event import Event
 from typing import List
 from pygame.sprite import Sprite
 
-from screen_dimensions import scale_factor
+from screen_dimensions import ScreenDimensions
 
 
 class Direction(Enum):
@@ -14,15 +14,15 @@ class Direction(Enum):
     STATIONARY = auto()
 
 
-ACCELERATION_VALUE = 50 * scale_factor
-
-
 class Player(Sprite):
-    def __init__(self, display_surface: Surface) -> None:
+    def __init__(self, display_surface: Surface, ScreenDimensions: ScreenDimensions) -> None:
         Sprite.__init__(self)
 
         self.display_surface = display_surface
-        self.image = pygame.Surface((10 * scale_factor, 20 * scale_factor))
+        self.scale_factor = ScreenDimensions.scale_factor
+        self.ACCELERATION_VALUE = 50 * self.scale_factor
+        
+        self.image = pygame.Surface((10 * self.scale_factor, 20 * self.scale_factor))
         self.image.fill("orange")
         self.rect = self.image.get_rect()
         self.rect.x = self.display_surface.get_rect().centerx
@@ -65,11 +65,11 @@ class Player(Sprite):
         if left_pressed and self.intended_direction != Direction.RIGHT:
             if self.velocity.x > 0:
                 self.velocity.x = 0
-            self.velocity.x += -ACCELERATION_VALUE
+            self.velocity.x += -self.ACCELERATION_VALUE
         elif right_pressed and self.intended_direction != Direction.LEFT:
             if self.velocity.x < 0:
                 self.velocity.x = 0
-            self.velocity.x += ACCELERATION_VALUE
+            self.velocity.x += self.ACCELERATION_VALUE
 
     def update_position(self, clock: pygame.time.Clock) -> None:
         dt = clock.get_time() / 1000

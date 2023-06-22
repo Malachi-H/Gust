@@ -1,39 +1,70 @@
 from random import randint
-from typing import List
+from typing import List, Tuple
 from pygame.surface import Surface
 import pygame
-from screen_dimensions import screen_dimensions, scale_factor
+
 from PIL import Image
 from pygame.event import Event
+from screen_dimensions import ScreenDimensions
 from button_type import ButtonType
 from HelperFunctions import load_full_screen_image
 
 
 class HomeScreen:
-    def __init__(self, screen: Surface) -> None:
+    def __init__(self, screen: Surface, ScreenDimensions: ScreenDimensions) -> None:
         self.display_surface = screen
+        self.ScreenDimensions = ScreenDimensions
         self.main_screen = load_full_screen_image(
-            "Assets\\Main Screen\\Main_screen_high_res.png",
+            self.ScreenDimensions,
+            "Assets\\Main Screen\\Main_Screen_Background\\Main_screen_high_res.png",
             "Assets\\Main Screen\\Main_Screen_Background\\main_screen.png",
         )
-        self.level_buttons: pygame.sprite.Group = self.create_level_buttons()
+        self.level_buttons: pygame.sprite.Group = self.create_buttons()
         self.button_pressed: (None | ButtonType) = None
 
         mouse = pygame.mouse.get_pos()
         self.MouseCollider = MouseCollider(mouse, self.display_surface)
 
-    def create_level_buttons(self):
+    def create_buttons(self):
         buttons = pygame.sprite.Group()
+        # Level 1
         buttons.add(
             Button(
                 button_type=ButtonType.level_1,
                 display_surface=self.display_surface,
+                ScreenDimensions=self.ScreenDimensions,
             )
         )
+        # Update
         buttons.add(
             Button(
-                button_type=ButtonType.settings,
+                button_type=ButtonType.update,
                 display_surface=self.display_surface,
+                ScreenDimensions=self.ScreenDimensions,
+            )
+        )
+        # Resolution 1 (720x480)
+        buttons.add(
+            Button(
+                button_type=ButtonType.Resolution_1,
+                display_surface=self.display_surface,
+                ScreenDimensions=self.ScreenDimensions,
+            )
+        )
+        # Resolution 2 (360x240)
+        buttons.add(
+            Button(
+                button_type=ButtonType.Resolution_2,
+                display_surface=self.display_surface,
+                ScreenDimensions=self.ScreenDimensions,
+            )
+        )
+        # Resolution 3 (1440x960)
+        buttons.add(
+            Button(
+                button_type=ButtonType.Resolution_3,
+                display_surface=self.display_surface,
+                ScreenDimensions=self.ScreenDimensions,
             )
         )
         return buttons
@@ -43,10 +74,9 @@ class HomeScreen:
             event.type for event in events
         ]  # Button Up to make detection rising edge
         if mouse_up:
-            if level_button.button_type == ButtonType.level_1:
-                self.button_pressed = ButtonType.level_1
-            elif level_button.button_type == ButtonType.settings:
-                self.button_pressed = ButtonType.settings
+            for button in ButtonType:
+                if level_button.button_type == button:
+                    self.button_pressed = button
 
     def detect_button_interaction(self, level_buttons, MouseCollider, events):
         for level_button in level_buttons:
@@ -78,9 +108,11 @@ class Button(pygame.sprite.Sprite):
         self,
         button_type: ButtonType,
         display_surface: Surface,
+        ScreenDimensions: ScreenDimensions,
     ) -> None:
         pygame.sprite.Sprite.__init__(self)
         self.display_surface = display_surface
+        self.ScreenDimensions = ScreenDimensions
         self.image_list: dict[str, pygame.Surface] = self.import_images(button_type)
         self.image = self.image_list["unselected"]
         self.masks: dict[str, pygame.Mask] = self.create_masks(self.image_list)
@@ -110,58 +142,68 @@ class Button(pygame.sprite.Sprite):
         if button_type == ButtonType.level_1:
             return {
                 "unselected": load_full_screen_image(
+                    self.ScreenDimensions,
                     "Assets\\Main Screen\\Level_Buttons\\level_1_button_high_res.png",
                     "Assets\\Main Screen\\Level_Buttons\\level_1_button.png",
                 ),
                 "selected": load_full_screen_image(
+                    self.ScreenDimensions,
                     "Assets\\Main Screen\\Level_Buttons\\level_1_button_selected_high_res.png",
                     "Assets\\Main Screen\\Level_Buttons\\level_1_button_selected.png",
                 ),
             }
-        elif button_type == ButtonType.settings:
+        elif button_type == ButtonType.update:
             return {
                 "unselected": load_full_screen_image(
-                    "Assets\\Main Screen\\setting_update_high_res.png",
+                    self.ScreenDimensions,
+                    "Assets\\Main Screen\\Settings_Buttons\\setting_update_high_res.png",
                     "Assets\\Main Screen\\Settings_Buttons\\setting_update.png",
                 ),
                 "selected": load_full_screen_image(
+                    self.ScreenDimensions,
                     "Assets\\Main Screen\\Settings_Buttons\\setting_update_selected_high_res.png",
                     "Assets\\Main Screen\\Settings_Buttons\\setting_update_selected.png",
                 ),
             }
-
-    def create_solid_colour_image(self, size):
-        # ! Deprecated
-        image = pygame.surface.Surface(
-            ([dimension * scale_factor for dimension in size])
-        )
-        image.fill(color=(randint(0, 255), randint(0, 255), randint(0, 255)))
-        return image
-
-    def create_solid_colour_rect(self, pos):
-        # ! Deprecated
-        rect = self.image.get_rect()  # type: ignore
-        rect.topleft = int(pos[0] * scale_factor), int(pos[1] * scale_factor)
-        return rect
-
-    # def check_mouse_interaction(self, events: List[Event], mouse):
-    #     mouse_down = pygame.MOUSEBUTTONDOWN in [event.type for event in events]
-    #     if pygame.sprite.collide_mask(MouseCollider, self.masks["unselected"]):
-    #     if self.rect.collidepoint(mouse):
-    #         self.display_image = self.images["selected"]
-    #         if mouse_down:
-    #             self.clicked = True
-    #         else:
-    #             self.clicked = False
-    #     else:
-    #         self.display_image = self.images["unselected"]
-
-    # def mask_collidepoint(self, mouse):
-    #     collision_surface = pygame.surface.Surface((10,10))
-    #     collision_surface.fill('red')
-    #     collision_rect = collision_surface.get_rect()
-    #     collision_rect.center = mouse
-    #     pygame.sprite.collide_mask(self, collision_rect)
+        elif button_type == ButtonType.Resolution_1:
+            return {
+                "unselected": load_full_screen_image(
+                    self.ScreenDimensions,
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_1_high_res.png",
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_1.png",
+                ),
+                "selected": load_full_screen_image(
+                    self.ScreenDimensions,
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_1_selected_high_res.png",
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_1_selected.png",
+                ),
+            }
+        elif button_type == ButtonType.Resolution_2:
+            return {
+                "unselected": load_full_screen_image(
+                    self.ScreenDimensions,
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_2_high_res.png",
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_2.png",
+                ),
+                "selected": load_full_screen_image(
+                    self.ScreenDimensions,
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_2_selected_high_res.png",
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_2_selected.png",
+                ),
+            }
+        elif button_type == ButtonType.Resolution_3:
+            return {
+                "unselected": load_full_screen_image(
+                    self.ScreenDimensions,
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_3_high_res.png",
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_3.png",
+                ),
+                "selected": load_full_screen_image(
+                    self.ScreenDimensions,
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_3_selected_high_res.png",
+                    "Assets\\Main Screen\\Settings_Buttons\\resolution_3_selected.png",
+                ),
+            }
 
     def update(self, events, MouseCollider):
         self.display_surface.blit(self.image, self.rect)

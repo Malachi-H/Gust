@@ -1,7 +1,7 @@
 from enum import Enum
 import math
 from time import sleep
-from typing import Protocol
+from typing import Protocol, Tuple
 from pygame.surface import Surface
 import pygame
 from player import Player
@@ -10,16 +10,19 @@ from pygame.sprite import Sprite
 from pygame.sprite import Group, GroupSingle
 from pygame.time import Clock
 import scrolling_values
-from screen_dimensions import scale_factor
+from screen_dimensions import ScreenDimensions
 
 
 class Level:
-    def __init__(self, screen: Surface):
+    def __init__(self, screen: Surface, ScreenDimensions: ScreenDimensions):
         self.screen = screen
+        self.ScreenDimensions = ScreenDimensions
 
         # Player
         self.player = pygame.sprite.GroupSingle()
-        self.player.add(Player(display_surface=self.screen))
+        self.player.add(
+            Player(display_surface=self.screen, ScreenDimensions=ScreenDimensions)
+        )
 
         # Background
         self.background = pygame.sprite.GroupSingle()
@@ -57,7 +60,7 @@ class Level:
         for key in down_keys:
             if pygame.key.get_pressed()[key]:
                 down_key_pressed = True
-        
+
         if up_key_pressed:
             scrolling_values.current_acceleration += scrolling_values.acceleration_up
         if down_key_pressed:
@@ -89,12 +92,14 @@ class Level:
             # move layer
             sprite.position += (
                 0,
-                (scrolling_values.velocity * parallax) * dt * scale_factor,
+                (scrolling_values.velocity * parallax)
+                * dt
+                * self.ScreenDimensions.scale_factor,
             )
             sprite.rect.center = sprite.position
 
             # keep layer in bounds
-            if sprite.rect.top > 0:
+            if sprite.rect.top > 0 and False:
                 # set every layer to the top
                 for layer in [
                     self.wind.sprite,
@@ -106,7 +111,7 @@ class Level:
 
                 scrolling_values.velocity = 0
                 scrolling_values.current_acceleration = 0
-            if sprite.rect.bottom <= self.screen.get_rect().bottom:
+            if sprite.rect.bottom <= self.screen.get_rect().bottom and False:
                 # set every layer to the bottom if any layer is above the bottom
                 for layer in [
                     self.wind.sprite,

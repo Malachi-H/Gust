@@ -11,6 +11,7 @@ from pygame.sprite import Group, GroupSingle
 from pygame.time import Clock
 import scrolling_values
 from screen_dimensions import ScreenDimensions
+from HelperFunctions import load_full_screen_image
 
 
 class Level:
@@ -45,6 +46,11 @@ class Level:
             screen=self.screen, background_dimensions=self.background.sprite.rect.size
         )
         self.wind.add(wind)
+        
+        # Level Complete Text
+        self.level_complete_text = load_full_screen_image(
+            self.ScreenDimensions, "Assets\\Win Screen\\win_screen_high_res", "Assets\\Win Screen\\win_screen.png"
+            )
 
     def update_scrolling_velocity(self) -> None:
         # apply gravity
@@ -99,7 +105,7 @@ class Level:
             sprite.rect.center = sprite.position
 
             # keep layer in bounds
-            if sprite.rect.top > 0 and False:
+            if sprite.rect.top > 0:
                 # set every layer to the top
                 for layer in [
                     self.wind.sprite,
@@ -111,14 +117,16 @@ class Level:
 
                 scrolling_values.velocity = 0
                 scrolling_values.current_acceleration = 0
-            if sprite.rect.bottom <= self.screen.get_rect().bottom and False:
+            if sprite.rect.bottom <= self.screen.get_rect().bottom:
                 # set every layer to the bottom if any layer is above the bottom
                 for layer in [
                     self.wind.sprite,
                     self.clouds.sprite,
                     self.background.sprite,
                 ]:
-                    layer.rect.bottom = self.screen.get_rect().bottom
+                    layer.rect.bottom = (
+                        self.screen.get_rect().bottom + 1
+                    )  # +1 to prevent layer staying stuck at the bottom of screen due to velocity being reset to 0 when player lands on the ground.
                     layer.position = pygame.Vector2(layer.rect.center)
 
                 scrolling_values.velocity = 0
@@ -127,6 +135,10 @@ class Level:
             # draw layer
             sprite.rect.center = int(sprite.position.x), int(sprite.position.y)
             self.screen.blit(sprite.image, sprite.rect.topleft)
+        
+    def handle_level_complete(self) -> None:
+        self.screen.blit(self.level_complete_text, (0, 0))
+        
 
     def wind_collision(
         self, player_sprite, group: Group | GroupSingle, collide_type

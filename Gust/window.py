@@ -31,7 +31,7 @@ class Window:
             tuple(self.ScreenDimensions.screen_dimensions), 528
         )
         # self.screen_flags
-        # 
+        #
         self.HomeScreen = HomeScreen(
             screen=self.screen, ScreenDimensions=self.ScreenDimensions
         )
@@ -63,7 +63,8 @@ class Window:
             self.ticks_at_level_complete = pygame.time.get_ticks()
         if (
             self.ticks_at_level_complete != -1
-            and pygame.time.get_ticks() * dt - self.ticks_at_level_complete * dt > 30
+            and pygame.time.get_ticks() * dt - self.ticks_at_level_complete * dt
+            > 1250 * dt
         ):
             # return to home screen and reset level
             self.ticks_at_level_complete = -1

@@ -33,6 +33,8 @@ class Game:
 
             self.window.update(events, self.clock)
             if self.window.restart_screen == True:
+                pygame.display.quit()
+                pygame.display.init()
                 self.window = self.make_window()
             pygame.display.update()
             self.clock.tick(60)

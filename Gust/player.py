@@ -85,7 +85,6 @@ class Player(Sprite):
         self.exact_center.x = self.display_surface.get_rect().centerx
         self.rect.center = int(self.exact_center.x), int(self.exact_center.y)
         self.velocity = pygame.Vector2(0, 0)
-        print("reset")
 
     def update(self, events: List[Event], clock) -> None:
         self.get_input(events)

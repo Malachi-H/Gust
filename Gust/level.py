@@ -46,11 +46,14 @@ class Level:
             screen=self.screen, background_dimensions=self.background.sprite.rect.size
         )
         self.wind.add(wind)
-        
+
         # Level Complete Text
-        self.level_complete_text = load_full_screen_image(
-            self.ScreenDimensions, "Assets\\Win Screen\\win_screen_high_res", "Assets\\Win Screen\\win_screen.png"
-            )
+        self.level_complete_img = load_full_screen_image(
+            self.ScreenDimensions,
+            "Assets\\Win Screen\\win_screen_high_res.png",
+            "Assets\\Win Screen\\win_screen.png",
+        )
+        self.level_complete = False
 
     def update_scrolling_velocity(self) -> None:
         # apply gravity
@@ -106,17 +109,8 @@ class Level:
 
             # keep layer in bounds
             if sprite.rect.top > 0:
-                # set every layer to the top
-                for layer in [
-                    self.wind.sprite,
-                    self.clouds.sprite,
-                    self.background.sprite,
-                ]:
-                    layer.rect.top = 0
-                    layer.position = pygame.Vector2(layer.rect.center)
+                self.level_complete = True
 
-                scrolling_values.velocity = 0
-                scrolling_values.current_acceleration = 0
             if sprite.rect.bottom <= self.screen.get_rect().bottom:
                 # set every layer to the bottom if any layer is above the bottom
                 for layer in [
@@ -135,10 +129,6 @@ class Level:
             # draw layer
             sprite.rect.center = int(sprite.position.x), int(sprite.position.y)
             self.screen.blit(sprite.image, sprite.rect.topleft)
-        
-    def handle_level_complete(self) -> None:
-        self.screen.blit(self.level_complete_text, (0, 0))
-        
 
     def wind_collision(
         self, player_sprite, group: Group | GroupSingle, collide_type
@@ -154,15 +144,18 @@ class Level:
         if collision:
             scrolling_values.current_acceleration = 0
             sleep(0.5)
-            scrolling_values.velocity = 0
-            self.player.sprite.reset_position()
-            for sprite in [
+            self.restart_level()
+
+    def restart_level(self):
+        scrolling_values.velocity = 0
+        self.player.sprite.reset_position()
+        for sprite in [
                 self.wind.sprite,
                 self.clouds.sprite,
                 self.background.sprite,
             ]:
-                sprite.rect.bottom = self.screen.get_rect().bottom
-                sprite.position = pygame.Vector2(sprite.rect.center)
+            sprite.rect.bottom = self.screen.get_rect().bottom
+            sprite.position = pygame.Vector2(sprite.rect.center)
 
     def update(self, events: list[Event], clock: Clock) -> None:
         self.move_and_draw_layer(clock)
@@ -171,6 +164,8 @@ class Level:
         self.obstacle_collision(
             self.player.sprite, self.clouds, pygame.sprite.collide_mask
         )
+        if self.level_complete == True:
+            self.screen.blit(self.level_complete_img, (0, 0))
 
 
 class Background(Sprite):

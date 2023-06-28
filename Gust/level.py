@@ -150,10 +150,10 @@ class Level:
         scrolling_values.velocity = 0
         self.player.sprite.reset_position()
         for sprite in [
-                self.wind.sprite,
-                self.clouds.sprite,
-                self.background.sprite,
-            ]:
+            self.wind.sprite,
+            self.clouds.sprite,
+            self.background.sprite,
+        ]:
             sprite.rect.bottom = self.screen.get_rect().bottom
             sprite.position = pygame.Vector2(sprite.rect.center)
 

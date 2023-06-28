@@ -15,13 +15,15 @@ class Direction(Enum):
 
 
 class Player(Sprite):
-    def __init__(self, display_surface: Surface, ScreenDimensions: ScreenDimensions) -> None:
+    def __init__(
+        self, display_surface: Surface, ScreenDimensions: ScreenDimensions
+    ) -> None:
         Sprite.__init__(self)
 
         self.display_surface = display_surface
         self.scale_factor = ScreenDimensions.scale_factor
         self.ACCELERATION_VALUE = 50 * self.scale_factor
-        
+
         self.image = pygame.Surface((10 * self.scale_factor, 20 * self.scale_factor))
         self.image.fill("orange")
         self.rect = self.image.get_rect()
@@ -39,7 +41,6 @@ class Player(Sprite):
 
         left_keys = pygame.K_LEFT, pygame.K_a
         right_keys = pygame.K_RIGHT, pygame.K_d
-
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key in left_keys:
@@ -61,7 +62,7 @@ class Player(Sprite):
         for key in right_keys:
             if pressed_keys[key]:
                 right_pressed = True
-                
+
         if left_pressed and self.intended_direction != Direction.RIGHT:
             if self.velocity.x > 0:
                 self.velocity.x = 0

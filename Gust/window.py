@@ -12,26 +12,13 @@ from home_screen import HomeScreen
 
 
 class Window:
-    """The Screen class is used to create the window and handle resizing.
-    ...
-
-    Functions:
-    - None
-
-    Attributes:
-    - screen
-    - screen_flags
-    """
-
     def __init__(self, ScreenDimensions: ScreenDimensions) -> None:
         os.environ["SDL_VIDEO_CENTERED"] = "1"
         self.screen_flags = pygame.RESIZABLE | pygame.SCALED
         self.ScreenDimensions = ScreenDimensions
         self.screen = pygame.display.set_mode(
-            tuple(self.ScreenDimensions.screen_dimensions), 528
+            tuple(self.ScreenDimensions.screen_dimensions), self.screen_flags
         )
-        # self.screen_flags
-        #
         self.HomeScreen = HomeScreen(
             screen=self.screen, ScreenDimensions=self.ScreenDimensions
         )
@@ -62,9 +49,9 @@ class Window:
             self.level_complete = True
             self.ticks_at_level_complete = pygame.time.get_ticks()
         if (
-            self.ticks_at_level_complete != -1
+            self.ticks_at_level_complete != -1 and self.level_complete == True
             and pygame.time.get_ticks() * dt - self.ticks_at_level_complete * dt
-            > 1250 * dt
+            > 2250 * dt
         ):
             # return to home screen and reset level
             self.ticks_at_level_complete = -1

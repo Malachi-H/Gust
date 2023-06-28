@@ -81,10 +81,10 @@ class HomeScreen:
     def detect_button_interaction(self, level_buttons, MouseCollider, events):
         for level_button in level_buttons:
             if pygame.sprite.collide_mask(MouseCollider, level_button):
-                level_button.image = level_button.image_list["selected"]
+                level_button.image = level_button.image_dict["selected"]
                 self.check_for_and_handle_button_click(events, level_button)
             else:
-                level_button.image = level_button.image_list["unselected"]
+                level_button.image = level_button.image_dict["unselected"]
 
     def update(self, events: List[Event]):
         self.display_surface.blit(self.main_screen, (0, 0))
@@ -113,9 +113,9 @@ class Button(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.display_surface = display_surface
         self.ScreenDimensions = ScreenDimensions
-        self.image_list: dict[str, pygame.Surface] = self.import_images(button_type)
-        self.image = self.image_list["unselected"]
-        self.masks: dict[str, pygame.Mask] = self.create_masks(self.image_list)
+        self.image_dict: dict[str, pygame.Surface] = self.import_images(button_type)
+        self.image = self.image_dict["unselected"]
+        self.masks: dict[str, pygame.Mask] = self.create_masks(self.image_dict)
         self.rect = self.image.get_rect()
         self.clicked = False
         self.button_type = button_type

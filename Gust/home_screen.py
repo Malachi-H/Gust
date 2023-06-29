@@ -92,6 +92,6 @@ class HomeScreen:
     def update(self, events: List[Event]):
         self.display_surface.blit(self.main_screen, (0, 0))
         mouse = pygame.mouse.get_pos()
-        self.level_buttons.update(self.MouseCollider)
+        self.level_buttons.update()
         self.MouseCollider.update(mouse)
         self.detect_button_interaction(self.level_buttons, self.MouseCollider, events)

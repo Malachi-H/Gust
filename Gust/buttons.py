@@ -194,5 +194,6 @@ class Button(pygame.sprite.Sprite):
                 ),
             }
 
-    def update(self, MouseCollider):
-        self.display_surface.blit(self.image, self.rect)
+    def update(self, excluded_buttons: list[ButtonType]=[]):
+        if self.button_type not in excluded_buttons:
+            self.display_surface.blit(self.image, self.rect)

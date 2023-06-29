@@ -22,7 +22,7 @@ class HelpScreen:
         self.MouseCollider = MouseCollider(
             pygame.mouse.get_pos(), self.display_surface, self.ScreenDimensions
         )
-
+        
         self.help_buttons: pygame.sprite.Group() = self.create_buttons()
         self.button_pressed: (None | ButtonType) = None
 
@@ -57,6 +57,9 @@ class HelpScreen:
 
     def update(self, events):
         self.display_surface.blit(self.current_help_screen, (0, 0))
-        self.help_buttons.update(self.MouseCollider)
+        if self.current_help_screen == self.help_screen_1:
+            self.help_buttons.update()
+        else:
+            self.help_buttons.update([ButtonType.help_next])
         self.MouseCollider.update(pygame.mouse.get_pos())
         self.detect_button_interaction(self.help_buttons, self.MouseCollider, events)

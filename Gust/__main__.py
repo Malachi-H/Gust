@@ -7,14 +7,20 @@ from player import Player
 
 
 class Game:
-    def __init__(self, Window: Type[Window]) -> None:
+    def __init__(self) -> None:
         pygame.init()
+        self._is_first_start_up = True
         self.ScreenDimensions = ScreenDimensions()
-        self.window = self.make_window()
+        self.window = Window(self.ScreenDimensions, self._is_first_start_up)
         self.clock = pygame.time.Clock()
+        
+    @property
+    def is_first_start_up(self) -> bool:
+        self._is_first_start_up = self.window.is_first_start_up
+        return self._is_first_start_up
 
     def make_window(self):
-        return Window(self.ScreenDimensions)
+        return Window(self.ScreenDimensions, self.is_first_start_up)
 
     def run(self):
         active = True
@@ -40,5 +46,5 @@ class Game:
             self.clock.tick(60)
 
 
-game = Game(Window)
+game = Game()
 game.run()

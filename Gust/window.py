@@ -19,6 +19,7 @@ class Window:
         self.screen = pygame.display.set_mode(
             tuple(self.ScreenDimensions.screen_dimensions), self.screen_flags
         )
+        pygame.display.set_caption("Gust")
         self.HomeScreen = HomeScreen(
             screen=self.screen, ScreenDimensions=self.ScreenDimensions
         )

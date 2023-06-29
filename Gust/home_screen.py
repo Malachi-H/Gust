@@ -12,6 +12,8 @@ from buttons import ButtonType, check_for_and_handle_button_click, Button
 
 
 class HomeScreen:
+    """Handles the visual elements of the home screen and the buttons on it. This includes creating the buttons and responding to button clicks.
+    """
     def __init__(self, screen: Surface, ScreenDimensions: ScreenDimensions) -> None:
         self.display_surface = screen
         self.ScreenDimensions = ScreenDimensions

@@ -17,6 +17,8 @@ class ButtonType(Enum):
 
 
 class MouseCollider(pygame.sprite.Sprite):
+    """ Creates a sprite which follows the mouse. Used to detect mouse hover over buttons
+    """
     def __init__(self, mouse, display_surface, ScreenDimensions: ScreenDimensions):
         pygame.sprite.Sprite.__init__(self)
         self.display_surface = display_surface

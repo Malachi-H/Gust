@@ -9,6 +9,7 @@ import HelperFunctions
 from screen_dimensions import ScreenDimensions
 from button_type import ButtonType
 from home_screen import HomeScreen
+from splash_screen import SplashScreen
 
 
 class Window:
@@ -24,7 +25,8 @@ class Window:
             screen=self.screen, ScreenDimensions=self.ScreenDimensions
         )
         self.Level = Level(screen=self.screen, ScreenDimensions=self.ScreenDimensions)
-        self.GUI = GUI_Type.home_screen
+        self.splash_screen = SplashScreen(self.screen, self.ScreenDimensions)
+        self.GUI = GUI_Type.splash_screen
         self.restart_screen = False
         self.level_complete = False
         self.ticks_at_level_complete = (
@@ -32,6 +34,11 @@ class Window:
         )  # -1 used as sentinel value for when level is not complete
 
     def update(self, events: list[Event], clock) -> None:
+        if self.GUI == GUI_Type.splash_screen:
+            self.splash_screen.update()
+            if self.splash_screen.stop_displaying == True:
+                self.GUI = GUI_Type.home_screen
+        
         if self.GUI == GUI_Type.home_screen:
             self.HomeScreen.update(events)
 
@@ -80,5 +87,6 @@ class Window:
 
 
 class GUI_Type(Enum):
+    splash_screen = auto()
     home_screen = auto()
     level = auto()

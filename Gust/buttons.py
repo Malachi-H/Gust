@@ -29,7 +29,7 @@ class MouseCollider(pygame.sprite.Sprite):
 
     def update(self, mouse):
         self.rect.center = mouse
-        self.display_surface.blit(self.image, self.rect)
+        # self.display_surface.blit(self.image, self.rect)
 
 
 def check_for_and_handle_button_click(events, level_button) -> ButtonType:

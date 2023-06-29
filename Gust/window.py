@@ -1,11 +1,9 @@
 from enum import Enum, auto
-from time import sleep
 import pygame
 import os
 from typing import Tuple
 from level import Level
 from pygame.event import Event
-import HelperFunctions
 from screen_dimensions import ScreenDimensions
 from home_screen import HomeScreen
 from splash_screen import SplashScreen

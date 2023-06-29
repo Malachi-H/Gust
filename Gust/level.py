@@ -1,7 +1,4 @@
-from enum import Enum
-import math
 from time import sleep
-from typing import Protocol, Tuple
 from pygame.surface import Surface
 import pygame
 from player import Player

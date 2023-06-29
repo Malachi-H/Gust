@@ -1,9 +1,6 @@
-from time import sleep
-from typing import Type
 import pygame
 from screen_dimensions import ScreenDimensions
 from window import Window
-from player import Player
 
 
 class Game:

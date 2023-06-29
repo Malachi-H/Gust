@@ -4,8 +4,8 @@ from window import Window
 
 
 class Game:
-    """Base class for the game. This class is responsible for creating the window and running the game loop. It is also responsible for re-initialising the window when the resolution is changed
-    """
+    """Base class for the game. This class is responsible for creating the window and running the game loop. It is also responsible for re-initialising the window when the resolution is changed"""
+
     def __init__(self) -> None:
         pygame.init()
         self._is_first_start_up = True

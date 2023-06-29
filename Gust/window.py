@@ -13,8 +13,8 @@ from buttons import ButtonType
 
 
 class Window:
-    """The window class handles what GUI to display at what time. It also handles the effects of button interactions, such as changing the GUI or the resolution.
-    """
+    """The window class handles what GUI to display at what time. It also handles the effects of button interactions, such as changing the GUI or the resolution."""
+
     def __init__(
         self, ScreenDimensions: ScreenDimensions, is_first_start_up: bool
     ) -> None:

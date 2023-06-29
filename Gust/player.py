@@ -38,7 +38,7 @@ class Player(Sprite):
 
     def get_input(self, events: List[Event]) -> None:
         # * Code works but can probably be simplified by tracking most recent key press
-        #left keys will be left arrow and a and left mouse down
+        # left keys will be left arrow and a and left mouse down
         left_mouse_button = 1
         right_mouse_buttons = 3
         left_keys = pygame.K_LEFT, pygame.K_a
@@ -72,12 +72,16 @@ class Player(Sprite):
         for key in left_keys:
             if pressed_keys[key]:
                 left_pressed = True
-        if pressed_mouse_buttons[left_mouse_button-1]: # -1 because mouse buttons are 0 indexed
+        if pressed_mouse_buttons[
+            left_mouse_button - 1
+        ]:  # -1 because mouse buttons are 0 indexed
             left_pressed = True
         for key in right_keys:
             if pressed_keys[key]:
                 right_pressed = True
-        if pressed_mouse_buttons[right_mouse_buttons-1]: # -1 because mouse buttons are 0 indexed
+        if pressed_mouse_buttons[
+            right_mouse_buttons - 1
+        ]:  # -1 because mouse buttons are 0 indexed
             right_pressed = True
 
         if left_pressed and self.intended_direction != Direction.RIGHT:

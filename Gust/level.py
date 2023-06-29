@@ -12,8 +12,8 @@ from HelperFunctions import load_full_screen_image
 
 
 class Level:
-    """Handles the elements interacting on the level screen. This includes the player, background, clouds, wind, and level complete text. This class also handles the parallax scrolling of the background, clouds, and wind.
-    """
+    """Handles the elements interacting on the level screen. This includes the player, background, clouds, wind, and level complete text. This class also handles the parallax scrolling of the background, clouds, and wind."""
+
     def __init__(self, screen: Surface, ScreenDimensions: ScreenDimensions):
         self.screen = screen
         self.ScreenDimensions = ScreenDimensions
@@ -55,8 +55,7 @@ class Level:
         self.level_complete = False
 
     def update_scrolling_velocity(self) -> None:
-        """Handles the calculations for how much to move each layer
-        """
+        """Handles the calculations for how much to move each layer"""
         # apply gravity
         scrolling_values.current_acceleration += scrolling_values.acceleration_gravity
         # apply key input
@@ -83,8 +82,7 @@ class Level:
         scrolling_values.current_acceleration = 0
 
     def move_and_draw_layer(self, clock: Clock) -> None:
-        """handles the movement and drawing of the background, clouds, and wind layers. 
-        """
+        """handles the movement and drawing of the background, clouds, and wind layers."""
         # compute new layer position
         self.update_scrolling_velocity()
 
@@ -172,8 +170,8 @@ class Level:
 
 
 class Background(Sprite):
-    """Sprite class to handle the background layer of the game.
-    """
+    """Sprite class to handle the background layer of the game."""
+
     def __init__(self, screen: Surface, width: int):
         Sprite.__init__(self)
 
@@ -191,8 +189,8 @@ class Background(Sprite):
 
 
 class Clouds(Sprite):
-    """Sprite class to handle the clouds layer of the game.
-    """
+    """Sprite class to handle the clouds layer of the game."""
+
     def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
         Sprite.__init__(self)
 
@@ -211,8 +209,8 @@ class Clouds(Sprite):
 
 
 class Wind(Sprite):
-    """Sprite class to handle the wind layer of the game.
-    """
+    """Sprite class to handle the wind layer of the game."""
+
     def __init__(self, screen: Surface, background_dimensions: tuple[int, int]):
         Sprite.__init__(self)
 
